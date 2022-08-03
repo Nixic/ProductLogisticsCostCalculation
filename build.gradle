@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+def lombockVersion = "1.18.24"
+
+
+dependencies {
+    compileOnly "org.projectlombok:lombok:${lombockVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombockVersion}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
