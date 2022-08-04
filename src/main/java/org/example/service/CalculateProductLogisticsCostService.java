@@ -50,20 +50,14 @@ public class CalculateProductLogisticsCostService {
             BigDecimal lotCount = BigDecimal.valueOf(productLot.getCount());
 
             BigDecimal percentOfLotWeight = product.getWeight().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                            .divide(commonProductWeight, 12, RoundingMode.HALF_UP));
+                            .divide(commonProductWeight, 24, RoundingMode.HALF_UP));
             BigDecimal percentOfLotVolume = product.getVolume().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                            .divide(commonProductVolume, 12, RoundingMode.HALF_UP));
-
-            System.out.printf("Percent of weight %s %n", percentOfLotWeight);
-            System.out.printf("Percent of value %s %n", percentOfLotVolume);
+                            .divide(commonProductVolume, 24, RoundingMode.HALF_UP));
 
             BigDecimal costByWeight = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
                     .multiply(percentOfLotWeight);
             BigDecimal costByVolume = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
                     .multiply(percentOfLotVolume);
-
-            System.out.printf("Cost by weight %s %n", costByWeight);
-            System.out.printf("Cost by value %s %n", costByVolume);
 
             BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
             System.out.printf("Average plan cost for product %s is %s %n%n", product.getName(), averagePlanLotCost);

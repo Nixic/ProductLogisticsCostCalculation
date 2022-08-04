@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 class CalculateProductLogisticsCostServiceTest {
 
@@ -14,17 +15,15 @@ class CalculateProductLogisticsCostServiceTest {
 
     @Test
     public void calculateAverageCost() {
-        // new product 50 cubic meters and 2000 kilograms
-        Product product_1 = new Product("Product_1", BigDecimal.valueOf(50.0), BigDecimal.valueOf(2000.0));
-        Product product_2 = new Product("Product_2", BigDecimal.valueOf(100.0), BigDecimal.valueOf(1000.0));
-        Product product_3 = new Product("Product_3", BigDecimal.valueOf(200.0), BigDecimal.valueOf(1000.0));
-
-        // add products to list (as lot, item of invoice, etc...)
-        productLotList.add(new ProductLot(product_1, 3000.0));
-        productLotList.add(new ProductLot(product_2, 2000.0));
-        productLotList.add(new ProductLot(product_3, 200.0));
-
+        for (int i = 1; i <= 10000; i++) {
+            // new product 50+i cubic meters and 2000 kilograms
+            Product newProduct = new Product("Product_" + i, BigDecimal.valueOf(5.0 + i), BigDecimal.valueOf(100.0 + i));
+            productLotList.add(new ProductLot(newProduct, 100.0 + i));
+        }
+        long startTime = System.nanoTime();
         new CalculateProductLogisticsCostService(productLotList, BigDecimal.valueOf(100000.0));
+
+        System.out.printf("*** Time to calculate: %s ms. *** %n", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
 
     }
 
