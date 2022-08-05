@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-public class CalculateProductLogisticsCostService {
+public class CalculateCostService {
 
     private BigDecimal commonProductVolume = BigDecimal.valueOf(0.00);
     private BigDecimal commonProductWeight = BigDecimal.valueOf(0.00);
@@ -18,7 +18,7 @@ public class CalculateProductLogisticsCostService {
      * @param productLots list of products on the bill to pay
      * @param planingCost known planing cost on transportation of all items on the bill to pay
      */
-    public CalculateProductLogisticsCostService(List<ProductLot> productLots, BigDecimal planingCost) {
+    public CalculateCostService(List<ProductLot> productLots, BigDecimal planingCost) {
         calculateCommonWeightAndVolume(productLots);
         calculateAverageCost(productLots, planingCost);
     }
@@ -50,9 +50,9 @@ public class CalculateProductLogisticsCostService {
             BigDecimal lotCount = BigDecimal.valueOf(productLot.getCount());
 
             BigDecimal percentOfLotWeight = product.getWeight().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                            .divide(commonProductWeight, 24, RoundingMode.HALF_UP));
+                    .divide(commonProductWeight, 24, RoundingMode.HALF_UP));
             BigDecimal percentOfLotVolume = product.getVolume().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                            .divide(commonProductVolume, 24, RoundingMode.HALF_UP));
+                    .divide(commonProductVolume, 24, RoundingMode.HALF_UP));
 
             BigDecimal costByWeight = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
                     .multiply(percentOfLotWeight);
