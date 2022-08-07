@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
-class CalculateCostCallableServiceTest {
+class CalculateCostCallableServiceImplTest {
 
     List<ProductLot> productLotList = new ArrayList<>();
 
@@ -21,15 +21,16 @@ class CalculateCostCallableServiceTest {
 
     @Test
     public void calculateAverageCost() {
-        for (int i = 1; i <= 100000; i++) {
-            // new product 50+i cubic meters and 2000 kilograms
+        for (int i = 1; i <= 10000; i++) {
+            // new product 5+i cubic meters and 2000 kilograms
             Product newProduct = new Product("Product_" + i, BigDecimal.valueOf(5.0 + i), BigDecimal.valueOf(100.0 + i));
             productLotList.add(new ProductLot(newProduct, 100.0 + i));
         }
         long startTime = System.nanoTime();
-        new CalculateCostCallableService(productLotList, BigDecimal.valueOf(100000.0));
+        CalculateCost calculateCost = new CalculateCostCallableServiceImpl();
+        calculateCost.calculateCostService(productLotList, BigDecimal.valueOf(100000.0));
 
-        System.out.printf("*** Time to calculate: %s ms. *** %n", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
+        System.out.printf("%n*** Time to calculate: %s ms. *** %n", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime));
 
     }
 

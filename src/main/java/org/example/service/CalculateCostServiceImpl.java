@@ -1,16 +1,19 @@
 package org.example.service;
 
+import lombok.NoArgsConstructor;
+import org.example.dto.BillToPayParams;
 import org.example.dto.Product;
 import org.example.dto.ProductLot;
+import org.example.service.utils.ProductLotUtil;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
-public class CalculateCostService {
-
-    private BigDecimal commonProductVolume = BigDecimal.valueOf(0.00);
-    private BigDecimal commonProductWeight = BigDecimal.valueOf(0.00);
+@Service
+@NoArgsConstructor
+public class CalculateCostServiceImpl implements CalculateCost {
 
     /**
      * Calculate and uniform distribution of common sum of money between product items in invoice in dependence on weight and volume percent.
@@ -18,34 +21,19 @@ public class CalculateCostService {
      * @param productLots list of products on the bill to pay
      * @param planingCost known planing cost on transportation of all items on the bill to pay
      */
-    public CalculateCostService(List<ProductLot> productLots, BigDecimal planingCost) {
-        calculateCommonWeightAndVolume(productLots);
-        calculateAverageCost(productLots, planingCost);
+    @Override
+    public List<ProductLot> calculateCostService(List<ProductLot> productLots, BigDecimal planingCost) {
+        BillToPayParams billToPayParams = ProductLotUtil.calculateCommonVolumeAndWeight(productLots);
+        return calculateAverageCost(productLots, planingCost, billToPayParams.getCommonVolume(), billToPayParams.getCommonWeight());
     }
 
-    /**
-     * Calculate common weight and volume of all items on the bill to pay.
-     *
-     * @param productLots items of product on the bill to pay
-     */
-    private void calculateCommonWeightAndVolume(List<ProductLot> productLots) {
-        for (ProductLot productLot : productLots) {
-            BigDecimal lotWeight = productLot.getProduct().getWeight().multiply(BigDecimal.valueOf(productLot.getCount()));
-            BigDecimal lotVolume = productLot.getProduct().getVolume().multiply(BigDecimal.valueOf(productLot.getCount()));
-            commonProductWeight = commonProductWeight.add(lotWeight);
-            commonProductVolume = commonProductVolume.add(lotVolume);
-        }
-        System.out.printf("%n");
-        System.out.printf("common weight %s %n", commonProductWeight);
-        System.out.printf("common volume %s %n%n", commonProductVolume);
-    }
-
-
-    private void calculateAverageCost(List<ProductLot> productLots, BigDecimal planingCost) {
+    @Override
+    public List<ProductLot> calculateAverageCost(List<ProductLot> productLotList, BigDecimal planingCost,
+                                                 BigDecimal commonProductVolume, BigDecimal commonProductWeight) {
         System.out.printf("Planing common cost %s %n%n", planingCost);
 
         BigDecimal averagePlanCostSum = BigDecimal.valueOf(0.00);
-        for (ProductLot productLot : productLots) {
+        for (ProductLot productLot : productLotList) {
             Product product = productLot.getProduct();
             BigDecimal lotCount = BigDecimal.valueOf(productLot.getCount());
 
@@ -60,11 +48,13 @@ public class CalculateCostService {
                     .multiply(percentOfLotVolume);
 
             BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
+            productLot.setTransportationCost(averagePlanLotCost);
             System.out.printf("Average plan cost for product %s is %s %n%n", product.getName(), averagePlanLotCost);
 
             averagePlanCostSum = averagePlanCostSum.add(averagePlanLotCost);
         }
         System.out.printf("Sum of calculated average costs (for visual control) is %s %n%n", averagePlanCostSum.setScale(3, RoundingMode.DOWN));
+        return productLotList;
     }
 
 
