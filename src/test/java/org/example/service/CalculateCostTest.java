@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
-class CalculateCostCallableServiceImplTest {
+class CalculateCostTest {
 
     static List<ProductLot> productLotList = new ArrayList<>();
 
