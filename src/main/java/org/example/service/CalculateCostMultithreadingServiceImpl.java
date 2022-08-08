@@ -2,18 +2,24 @@ package org.example.service;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.BillToPayParams;
-import org.example.dto.Product;
 import org.example.dto.ProductLot;
 import org.example.service.utils.ProductLotUtil;
+import org.example.utils.ArrayUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
 public class CalculateCostMultithreadingServiceImpl implements CalculateCost {
+
+    private int batchThreadSize = 2;
+
+    public void setBatchThreadSize(int batchThreadSize) {
+        this.batchThreadSize = batchThreadSize;
+    }
 
     /**
      * Calculate and uniform distribution of common sum of money between product items in invoice in dependence on weight and volume percent.
@@ -29,31 +35,21 @@ public class CalculateCostMultithreadingServiceImpl implements CalculateCost {
 
     @Override
     public List<ProductLot> calculateAverageCost(List<ProductLot> productLotList, BigDecimal planingCost,
-                                                  BigDecimal commonProductVolume, BigDecimal commonProductWeight) {
+                                                 BigDecimal commonProductVolume, BigDecimal commonProductWeight) {
         System.out.printf("Planing common cost %s %n%n", planingCost);
 
-        BigDecimal averagePlanCostSum = BigDecimal.valueOf(0.00);
-        for (ProductLot productLot : productLotList) {
-            Product product = productLot.getProduct();
-            BigDecimal lotCount = BigDecimal.valueOf(productLot.getCount());
+        CopyOnWriteArrayList<ProductLot> onWriteArrayList = new CopyOnWriteArrayList<>();
+        List<List<ProductLot>> listOfProductLotSubList = ArrayUtil.divideListToSubLists(productLotList, batchThreadSize);
 
-            BigDecimal percentOfLotWeight = product.getWeight().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                    .divide(commonProductWeight, 24, RoundingMode.HALF_UP));
-            BigDecimal percentOfLotVolume = product.getVolume().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                    .divide(commonProductVolume, 24, RoundingMode.HALF_UP));
-
-            BigDecimal costByWeight = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
-                    .multiply(percentOfLotWeight);
-            BigDecimal costByVolume = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
-                    .multiply(percentOfLotVolume);
-
-            BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
-            productLot.setTransportationCost(averagePlanLotCost);
-            System.out.printf("Average plan cost for product %s is %s %n%n", product.getName(), averagePlanLotCost);
-
-            averagePlanCostSum = averagePlanCostSum.add(averagePlanLotCost);
+        for (int i = 0; i < listOfProductLotSubList.size(); i++) {
+            List<ProductLot> productLots = listOfProductLotSubList.get(i);
+            MultiThreadCalculate multiThreadCalculate = new MultiThreadCalculate(productLots, planingCost, commonProductVolume, commonProductWeight);
+            Thread productThread = new Thread(multiThreadCalculate, "ProductThread_" + i);
+            productThread.start();
+            onWriteArrayList.addAll(multiThreadCalculate.getBatch()); // here data not updated, need use sleep to see result in array
         }
-        System.out.printf("Sum of calculated average costs (for visual control) is %s %n%n", averagePlanCostSum.setScale(3, RoundingMode.DOWN));
-        return productLotList;
+        return onWriteArrayList;
+
     }
+
 }

@@ -37,8 +37,8 @@ public class CallableCalculate implements Callable<BigDecimal> {
                 .multiply(percentOfLotWeight);
 
         BigDecimal averagePlanLotCost = (costByVolume.add(costByWeight)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
-        System.out.printf("%nAverage plan cost for product %s is %s", product.getName(), averagePlanLotCost);
-        System.out.flush();
+        System.out.printf("Average plan cost for product %s is %s ThreadName: %s %n",
+                productLot.getProduct().getName(), averagePlanLotCost, Thread.currentThread().getName());
         return averagePlanLotCost;
     }
 }

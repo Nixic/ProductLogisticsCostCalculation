@@ -49,7 +49,8 @@ public class CalculateCostServiceImpl implements CalculateCost {
 
             BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
             productLot.setTransportationCost(averagePlanLotCost);
-            System.out.printf("Average plan cost for product %s is %s %n%n", product.getName(), averagePlanLotCost);
+            System.out.printf("Average plan cost for product %s is %s ThreadName: %s %n",
+                    productLot.getProduct().getName(), averagePlanLotCost, Thread.currentThread().getName());
 
             averagePlanCostSum = averagePlanCostSum.add(averagePlanLotCost);
         }
