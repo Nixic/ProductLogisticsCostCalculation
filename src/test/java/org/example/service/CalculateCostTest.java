@@ -42,7 +42,7 @@ class CalculateCostTest {
 
 
     @Test
-    public void calculateAverageMultithreading() {
+    public void calculateAverageCostMultithreading() {
         BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
         int batchThreadSize = 10;
 
@@ -62,7 +62,7 @@ class CalculateCostTest {
 
 
     @Test
-    public void calculateAverageCallable() {
+    public void calculateAverageCostCallable() {
         BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
 
         long startTime_2 = System.nanoTime();
