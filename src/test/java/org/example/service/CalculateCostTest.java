@@ -15,7 +15,8 @@ import java.util.concurrent.TimeUnit;
 class CalculateCostTest {
 
     static List<ProductLot> productLotList = new ArrayList<>();
-
+    static BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
+    static String timeToCalculateStringFormat = "%n*** Time to calculate: %s ms. *** %n";
     @Test
     void contextLoads() {
     }
@@ -31,19 +32,16 @@ class CalculateCostTest {
 
     @Test
     public void calculateAverageCostSingleThread() {
-        BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
-
         long startTime_0 = System.nanoTime();
-        CalculateCost calculateCost = new CalculateCostServiceImpl();
+        CalculateCostServiceImpl calculateCost = new CalculateCostServiceImpl();
         calculateCost.calculateCostService(productLotList, planingCost);
-        System.out.printf("%n*** Time to calculate: %s ms. *** %n", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime_0));
+        System.out.printf(timeToCalculateStringFormat, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime_0));
 
     }
 
 
     @Test
     public void calculateAverageCostMultithreading() {
-        BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
         int batchThreadSize = 20;
 
         long startTime_1 = System.nanoTime();
@@ -53,7 +51,7 @@ class CalculateCostTest {
         try {
             int sleepTime = 200;
             Thread.sleep(sleepTime); // This need to see Time at the end of console (will added to execute time)
-            System.out.printf("%n*** Time to calculate: %s ms. *** %n",
+            System.out.printf(timeToCalculateStringFormat,
                     TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime_1 - sleepTime)); // ...  sleepTime subtracted
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -63,12 +61,10 @@ class CalculateCostTest {
 
     @Test
     public void calculateAverageCostCallable() {
-        BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
-
         long startTime_2 = System.nanoTime();
         CalculateCost calculateCostCallable = new CalculateCostCallableServiceImpl();
         calculateCostCallable.calculateCostService(productLotList, planingCost);
-        System.out.printf("%n*** Time to calculate: %s ms. *** %n", TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime_2));
+        System.out.printf(timeToCalculateStringFormat, TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime_2));
     }
 
 }

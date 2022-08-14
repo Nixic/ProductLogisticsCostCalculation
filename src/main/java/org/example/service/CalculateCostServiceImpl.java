@@ -3,7 +3,6 @@ package org.example.service;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.dto.BillToPayParams;
-import org.example.dto.Product;
 import org.example.dto.ProductLot;
 import org.example.service.utils.ProductLotUtil;
 import org.springframework.stereotype.Service;
@@ -36,30 +35,19 @@ public class CalculateCostServiceImpl implements CalculateCost {
 
         BigDecimal averagePlanCostSum = BigDecimal.valueOf(0.00);
         for (ProductLot productLot : productLotList) {
-            Product product = productLot.getProduct();
-            BigDecimal lotCount = BigDecimal.valueOf(productLot.getCount());
-
-            BigDecimal percentOfLotWeight = product.getWeight().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                    .divide(commonProductWeight, 24, RoundingMode.HALF_UP));
-            BigDecimal percentOfLotVolume = product.getVolume().multiply(lotCount).multiply(BigDecimal.valueOf(100.00)
-                    .divide(commonProductVolume, 24, RoundingMode.HALF_UP));
-
-            BigDecimal costByWeight = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
-                    .multiply(percentOfLotWeight);
-            BigDecimal costByVolume = planingCost.divide(BigDecimal.valueOf(100.00), 6, RoundingMode.HALF_UP)
-                    .multiply(percentOfLotVolume);
-
-            BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
+            BigDecimal averagePlanLotCost = ProductLotUtil.calculateAverageCostOfProductLot(planingCost, commonProductVolume, commonProductWeight, productLot);
             productLot.setTransportationCost(averagePlanLotCost);
             String costInfo = String.format("Average plan cost for product %s is %s ThreadName: %s",
                     productLot.getProduct().getName(), averagePlanLotCost, Thread.currentThread().getName());
             log.info(costInfo);
             averagePlanCostSum = averagePlanCostSum.add(averagePlanLotCost);
         }
-        String costSum = String.format("Sum of calculated average costs (for visual control) is %s", averagePlanCostSum.setScale(3, RoundingMode.DOWN));
+        String costSum = String.format("Sum of calculated average costs (for visual control) is %s", averagePlanCostSum.setScale(3, RoundingMode.HALF_UP));
         log.info(costSum);
         return productLotList;
     }
+
+
 
 
 }
