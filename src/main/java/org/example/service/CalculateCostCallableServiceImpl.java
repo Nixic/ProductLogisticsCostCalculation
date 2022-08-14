@@ -16,7 +16,7 @@ import java.util.concurrent.FutureTask;
 public class CalculateCostCallableServiceImpl implements CalculateCost {
 
     /**
-     * Calculate and uniform distribution of common sum of money between product items in invoice in dependence on weight and volume percent.
+     * Calculate and uniform distribution of common sum of money between product items on the bill to pay in dependence on weight and volume percent.
      *
      * @param productLots list of products on the bill to pay
      * @param planingCost known planing cost on transportation of all items on the bill to pay

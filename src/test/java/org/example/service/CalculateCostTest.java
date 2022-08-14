@@ -44,14 +44,14 @@ class CalculateCostTest {
     @Test
     public void calculateAverageCostMultithreading() {
         BigDecimal planingCost = BigDecimal.valueOf(1000000.0);
-        int batchThreadSize = 10;
+        int batchThreadSize = 20;
 
         long startTime_1 = System.nanoTime();
         CalculateCostMultithreadingServiceImpl calculateCostMultithreading = new CalculateCostMultithreadingServiceImpl();
         calculateCostMultithreading.setBatchThreadSize(batchThreadSize);
         calculateCostMultithreading.calculateCostService(productLotList, planingCost);
         try {
-            int sleepTime = 20;
+            int sleepTime = 200;
             Thread.sleep(sleepTime); // This need to see Time at the end of console (will added to execute time)
             System.out.printf("%n*** Time to calculate: %s ms. *** %n",
                     TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime_1 - sleepTime)); // ...  sleepTime subtracted

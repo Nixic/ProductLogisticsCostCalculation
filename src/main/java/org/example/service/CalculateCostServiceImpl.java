@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.BillToPayParams;
 import org.example.dto.Product;
 import org.example.dto.ProductLot;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Service
 @NoArgsConstructor
+@Slf4j
 public class CalculateCostServiceImpl implements CalculateCost {
 
     /**
@@ -30,7 +32,7 @@ public class CalculateCostServiceImpl implements CalculateCost {
     @Override
     public List<ProductLot> calculateAverageCost(List<ProductLot> productLotList, BigDecimal planingCost,
                                                  BigDecimal commonProductVolume, BigDecimal commonProductWeight) {
-        System.out.printf("Planing common cost %s %n%n", planingCost);
+        log.info(String.format("Planing common cost %s", planingCost));
 
         BigDecimal averagePlanCostSum = BigDecimal.valueOf(0.00);
         for (ProductLot productLot : productLotList) {
@@ -49,12 +51,13 @@ public class CalculateCostServiceImpl implements CalculateCost {
 
             BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
             productLot.setTransportationCost(averagePlanLotCost);
-            System.out.printf("Average plan cost for product %s is %s ThreadName: %s %n",
+            String costInfo = String.format("Average plan cost for product %s is %s ThreadName: %s",
                     productLot.getProduct().getName(), averagePlanLotCost, Thread.currentThread().getName());
-
+            log.info(costInfo);
             averagePlanCostSum = averagePlanCostSum.add(averagePlanLotCost);
         }
-        System.out.printf("Sum of calculated average costs (for visual control) is %s %n%n", averagePlanCostSum.setScale(3, RoundingMode.DOWN));
+        String costSum = String.format("Sum of calculated average costs (for visual control) is %s", averagePlanCostSum.setScale(3, RoundingMode.DOWN));
+        log.info(costSum);
         return productLotList;
     }
 

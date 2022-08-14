@@ -1,5 +1,6 @@
 package org.example.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.Product;
 import org.example.dto.ProductLot;
 
@@ -7,6 +8,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.concurrent.Callable;
 
+@Slf4j
 public class CallableCalculate implements Callable<BigDecimal> {
 
     private final BigDecimal commonProductVolume;
@@ -37,8 +39,9 @@ public class CallableCalculate implements Callable<BigDecimal> {
                 .multiply(percentOfLotWeight);
 
         BigDecimal averagePlanLotCost = (costByVolume.add(costByWeight)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
-        System.out.printf("Average plan cost for product %s is %s ThreadName: %s %n",
+        String costInfo = String.format("Average plan cost for product %s is %s ThreadName: %s",
                 productLot.getProduct().getName(), averagePlanLotCost, Thread.currentThread().getName());
+        log.info(costInfo);
         return averagePlanLotCost;
     }
 }

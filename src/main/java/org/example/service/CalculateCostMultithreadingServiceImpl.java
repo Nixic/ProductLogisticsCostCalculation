@@ -1,6 +1,7 @@
 package org.example.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.BillToPayParams;
 import org.example.dto.ProductLot;
 import org.example.service.utils.ProductLotUtil;
@@ -13,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalculateCostMultithreadingServiceImpl implements CalculateCost {
 
     private int batchThreadSize = 2;
@@ -36,7 +38,7 @@ public class CalculateCostMultithreadingServiceImpl implements CalculateCost {
     @Override
     public List<ProductLot> calculateAverageCost(List<ProductLot> productLotList, BigDecimal planingCost,
                                                  BigDecimal commonProductVolume, BigDecimal commonProductWeight) {
-        System.out.printf("Planing common cost %s %n%n", planingCost);
+        log.info(String.format("Planing common cost %s", planingCost));
 
         CopyOnWriteArrayList<ProductLot> onWriteArrayList = new CopyOnWriteArrayList<>();
         List<List<ProductLot>> listOfProductLotSubList = ArrayUtil.divideListToSubLists(productLotList, batchThreadSize);

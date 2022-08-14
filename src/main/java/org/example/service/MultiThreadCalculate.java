@@ -1,5 +1,6 @@
 package org.example.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.dto.Product;
 import org.example.dto.ProductLot;
 
@@ -7,9 +8,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+@Slf4j
 public class MultiThreadCalculate implements Runnable {
 
-    private List<ProductLot> batch;
+    private final List<ProductLot> batch;
     private final BigDecimal planingCost;
     private final BigDecimal commonProductVolume;
     private final BigDecimal commonProductWeight;
@@ -46,9 +48,9 @@ public class MultiThreadCalculate implements Runnable {
                     .multiply(percentOfLotVolume);
 
             BigDecimal averagePlanLotCost = (costByWeight.add(costByVolume)).divide(BigDecimal.valueOf(2.0), 6, RoundingMode.HALF_UP);
-            System.out.printf("Average plan cost for product %s is %s ThreadName: %s %n",
+            String costInfo = String.format("Average plan cost for product %s is %s ThreadName: %s",
                     productLot.getProduct().getName(), averagePlanLotCost, Thread.currentThread().getName());
-            System.out.flush();
+            log.info(costInfo);
         }
 
 
