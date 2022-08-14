@@ -33,8 +33,9 @@ public class MainController {
     @PostMapping("/multithreading")
     public String multithreadingCalc(@RequestBody BillToPay billToPay) {
         multithreadingService.calculateCostService(billToPay.getProductLots(), billToPay.getCommonTransportationCost());
-        return "See result in console. To see result here call /callable endpoint";
+        return "See result in console. Call /callable endpoint, To see result of multithreading calculation here";
     }
+
     @PostMapping("/callable")
     public List<ProductLot> callableCalc(@RequestBody BillToPay billToPay) {
         return callableService.calculateCostService(billToPay.getProductLots(), billToPay.getCommonTransportationCost());

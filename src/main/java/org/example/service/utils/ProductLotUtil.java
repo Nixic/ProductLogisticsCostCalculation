@@ -35,12 +35,13 @@ public class ProductLotUtil {
     }
 
     /**
-     * Calculate average cost for one line in bill to pay
-     * @param planingCost common transportation cost of all items on bill to pay
+     * Calculate average cost for one line in bill to pay.
+     *
+     * @param planingCost         common transportation cost of all items on bill to pay
      * @param commonProductVolume common volume of all items on the bill to pay.
      * @param commonProductWeight common weight of all items on the bill to pay.
-     * @param productLot one line on bill to pay
-     * @return average cost for one line in bill to pay
+     * @param productLot          one line on the bill to pay
+     * @return average cost for one line on the bill to pay
      */
     public BigDecimal calculateAverageCostOfProductLot(BigDecimal planingCost, BigDecimal commonProductVolume, BigDecimal commonProductWeight, ProductLot productLot) {
         Product product = productLot.getProduct();
