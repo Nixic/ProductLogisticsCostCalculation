@@ -4,11 +4,14 @@ import org.example.dto.BillToPay;
 import org.example.dto.ProductLot;
 import org.example.service.CalculateCost;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import javax.validation.Valid;
 
 @RestController
 public class MainController {
@@ -26,8 +29,9 @@ public class MainController {
     }
 
     @PostMapping()
-    public List<ProductLot> singleThreadingCalc(@RequestBody BillToPay billToPay) {
-        return calculateCostService.calculateCostService(billToPay.getProductLots(), billToPay.getCommonTransportationCost());
+    public ResponseEntity<BillToPay> singleThreadingCalc(@Valid @RequestBody BillToPay billToPay) {
+        List<ProductLot> body = calculateCostService.calculateCostService(billToPay.getProductLots(), billToPay.getCommonTransportationCost());
+        return new ResponseEntity<>(new BillToPay(body, billToPay.getCommonTransportationCost()), HttpStatus.OK);
     }
 
     @PostMapping("/multithreading")
